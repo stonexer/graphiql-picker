@@ -13,13 +13,14 @@ import {
 } from 'graphql';
 import React, { useState } from 'react';
 
-import Checkbox from '../Checkbox';
-import FoldIcon from '../FoldIcon';
+import { editFieldSelection } from '../../helpers/query';
 import {
   AddFieldNode,
   RemoveFieldNode,
   UpdateFieldNode,
 } from '../RootTypeItem';
+import Checkbox from '../Checkbox';
+import FoldIcon from '../FoldIcon';
 
 import styles from './index.module.css';
 
@@ -62,46 +63,14 @@ const FieldItem: React.FC<FieldItemProps> = ({
             selections: [],
           };
 
-      switch (input.type) {
-        case 'addField': {
-          set.selections = [
-            ...set.selections,
-            {
-              kind: Kind.FIELD,
-              name: {
-                kind: Kind.NAME,
-                value: input.payloads.name,
-              },
-            },
-          ];
-          break;
-        }
-        case 'removeField': {
-          set.selections = (set.selections as FieldNode[]).filter(
-            (item) => item.name.value !== input.payloads.name
-          );
-          break;
-        }
-        case 'updateField': {
-          set.selections = (set.selections as FieldNode[]).map((item) => {
-            if (item.name.value === input.payloads.name.value) {
-              return input.payloads;
-            }
-            return item;
-          });
-          break;
-        }
-      }
+      set.selections = editFieldSelection(set.selections, input);
 
       return set;
     })();
 
     onEdit({
       type: 'updateField',
-      payloads: {
-        ...fieldSelection,
-        selectionSet,
-      },
+      payloads: { ...fieldSelection, selectionSet },
     });
   };
 

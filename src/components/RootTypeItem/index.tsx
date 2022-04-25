@@ -11,6 +11,7 @@ import {
 } from 'graphql';
 import React, { useState } from 'react';
 import { useSchemaContext } from '../../contexts/SchemaContext';
+import { editFieldSelection } from '../../helpers/query';
 import FieldItem from '../FieldItem';
 
 import FoldIcon from '../FoldIcon';
@@ -57,43 +58,14 @@ const RootTypeItem: React.FC<RootTypeItemProps> = ({
       return null;
     }
 
-    const selections: SelectionNode[] = (() => {
-      switch (input.type) {
-        case 'addField': {
-          return [
-            ...operation.selectionSet.selections,
-            {
-              kind: Kind.FIELD,
-              name: {
-                kind: Kind.NAME,
-                value: input.payloads.name,
-              },
-            },
-          ];
-        }
-        case 'removeField': {
-          return (operation.selectionSet.selections as FieldNode[]).filter(
-            (item) => item.name.value !== input.payloads.name
-          );
-        }
-        case 'updateField': {
-          return (operation.selectionSet.selections as FieldNode[]).map(
-            (item) => {
-              if (item.name.value === input.payloads.name.value) {
-                return input.payloads;
-              }
-              return item;
-            }
-          );
-        }
-      }
-    })();
-
     onEditDefinition({
       ...(operation as OperationDefinitionNode),
       selectionSet: {
         ...operation.selectionSet,
-        selections,
+        selections: editFieldSelection(
+          operation.selectionSet.selections,
+          input
+        ),
       },
     });
   };

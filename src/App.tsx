@@ -34,6 +34,7 @@ function App() {
         query={query}
         schema={schema}
         fetcher={fetcher}
+        defaultVariableEditorOpen
         onEditQuery={(newQuery) => setQuery(newQuery ?? '')}
       />
     </div>
