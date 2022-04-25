@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import {
-  DocumentNode,
   ExecutableDefinitionNode,
+  FieldNode,
   GraphQLSchema,
   isExecutableDefinitionNode,
   OperationDefinitionNode,
@@ -15,12 +15,15 @@ import { parseQuery } from '../../helpers/query';
 import RootTypeItem from '../RootTypeItem';
 
 import styles from './index.module.css';
+import { getArgumentsVariableExample } from '../../helpers/variable';
+import { EditFieldAction } from '../../types/edit';
 
 export interface SchemaPickerProps {
   className?: string;
   schema: GraphQLSchema;
   query: string;
   onEdit(nextQuery: string): void;
+  onEditVariables(nextVariables: string): void;
 }
 
 const SchemaPicker: React.FC<SchemaPickerProps> = ({
@@ -28,6 +31,7 @@ const SchemaPicker: React.FC<SchemaPickerProps> = ({
   schema,
   query,
   onEdit,
+  onEditVariables,
 }) => {
   const { queryType, mutationType } = useSchema(schema);
   const [queryDocument, setQueryDocument] = useState(() => parseQuery(query));
@@ -54,9 +58,23 @@ const SchemaPicker: React.FC<SchemaPickerProps> = ({
     return null;
   })();
 
-  const onEditDefinition = (nextDefinition: OperationDefinitionNode) => {
+  const onEditDefinition = (
+    nextDefinition: OperationDefinitionNode,
+    input?: EditFieldAction
+  ) => {
     if (!queryDocument) {
       return;
+    }
+
+    // TODO:
+    if (input?.type === 'addField') {
+      onEditVariables(
+        JSON.stringify(
+          getArgumentsVariableExample(input.payloads.args),
+          null,
+          2
+        )
+      );
     }
 
     onEdit(

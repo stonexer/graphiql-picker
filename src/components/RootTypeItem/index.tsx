@@ -48,18 +48,21 @@ const RootTypeItem: React.FC<RootTypeItemProps> = ({
       return undefined;
     })();
 
-    onEditDefinition({
-      ...(operation as OperationDefinitionNode),
-      variableDefinitions:
-        nextVariableDefinitions ?? operation.variableDefinitions,
-      selectionSet: {
-        ...operation.selectionSet,
-        selections: editFieldSelection(
-          operation.selectionSet.selections,
-          input
-        ),
+    onEditDefinition(
+      {
+        ...(operation as OperationDefinitionNode),
+        variableDefinitions:
+          nextVariableDefinitions ?? operation.variableDefinitions,
+        selectionSet: {
+          ...operation.selectionSet,
+          selections: editFieldSelection(
+            operation.selectionSet.selections,
+            input
+          ),
+        },
       },
-    });
+      input
+    );
   };
 
   return (

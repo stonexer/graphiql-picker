@@ -22,20 +22,28 @@ const defaultQuery = `query Something {
 
 function App() {
   const [query, setQuery] = useState(defaultQuery);
+  const [variables, setVariables] = useState('{}');
 
   return (
     <div className="App">
       {schema ? (
         <StrictMode>
-          <SchemaPicker schema={schema} query={query} onEdit={setQuery} />
+          <SchemaPicker
+            schema={schema}
+            query={query}
+            onEdit={setQuery}
+            onEditVariables={setVariables}
+          />
         </StrictMode>
       ) : null}
       <GraphiQL
+        defaultVariableEditorOpen
         query={query}
         schema={schema}
         fetcher={fetcher}
-        defaultVariableEditorOpen
+        variables={variables}
         onEditQuery={(newQuery) => setQuery(newQuery ?? '')}
+        onEditVariables={setVariables}
       />
     </div>
   );
