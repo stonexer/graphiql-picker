@@ -3,6 +3,7 @@ import {
   ExecutableDefinitionNode,
   GraphQLObjectType,
   GraphQLSchema,
+  Kind,
   OperationDefinitionNode,
 } from 'graphql';
 import React, { useState } from 'react';
@@ -37,10 +38,6 @@ const RootTypeItem: React.FC<RootTypeItemProps> = ({
   const [isFolded, setIsFolded] = useState(false);
 
   const handleToggleField = (input: EditFieldAction) => {
-    if (!operation) {
-      return null;
-    }
-
     const nextVariableDefinitions = (() => {
       if (input.type === 'addField') {
         return getVariableDefinitions(input.payloads);
@@ -50,13 +47,23 @@ const RootTypeItem: React.FC<RootTypeItemProps> = ({
 
     onEditDefinition(
       {
-        ...(operation as OperationDefinitionNode),
+        ...((operation
+          ? operation
+          : {
+              kind: Kind.OPERATION_DEFINITION,
+              // TODO:
+              operation: 'query',
+              name: {
+                kind: Kind.NAME,
+                value: 'ExampleQuery',
+              },
+            }) as OperationDefinitionNode),
         variableDefinitions:
-          nextVariableDefinitions ?? operation.variableDefinitions,
+          nextVariableDefinitions ?? operation?.variableDefinitions,
         selectionSet: {
-          ...operation.selectionSet,
+          kind: Kind.SELECTION_SET,
           selections: editFieldSelection(
-            operation.selectionSet.selections,
+            operation?.selectionSet.selections || [],
             input
           ),
         },

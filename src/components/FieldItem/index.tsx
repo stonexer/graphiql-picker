@@ -108,6 +108,7 @@ const FieldItem: React.FC<FieldItemProps> = ({
       {isFolded || !fieldTypeFields ? null : (
         <div className={styles.fields}>
           {fieldArgs.length > 0 ? (
+            // TODO:
             <div className={styles.showArgument}>
               <ArgumentsIcon />
               <span>Show Arguments</span>

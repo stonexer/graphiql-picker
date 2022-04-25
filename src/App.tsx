@@ -15,10 +15,7 @@ const fetcher = createGraphiQLFetcher({
   url: 'https://api.spacex.land/graphql/',
 });
 
-const defaultQuery = `query Something {
-  __typename
-}
-`;
+const defaultQuery = ``;
 
 function App() {
   const [query, setQuery] = useState(defaultQuery);

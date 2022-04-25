@@ -4,6 +4,7 @@ import {
   FieldNode,
   GraphQLSchema,
   isExecutableDefinitionNode,
+  Kind,
   OperationDefinitionNode,
   print,
 } from 'graphql';
@@ -62,10 +63,6 @@ const SchemaPicker: React.FC<SchemaPickerProps> = ({
     nextDefinition: OperationDefinitionNode,
     input?: EditFieldAction
   ) => {
-    if (!queryDocument) {
-      return;
-    }
-
     // TODO:
     if (input?.type === 'addField') {
       onEditVariables(
@@ -75,6 +72,16 @@ const SchemaPicker: React.FC<SchemaPickerProps> = ({
           2
         )
       );
+    }
+
+    if (!queryDocument) {
+      onEdit(
+        print({
+          kind: Kind.DOCUMENT,
+          definitions: [nextDefinition],
+        })
+      );
+      return;
     }
 
     onEdit(
