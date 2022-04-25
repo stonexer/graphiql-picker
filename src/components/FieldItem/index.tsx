@@ -47,34 +47,54 @@ const FieldItem: React.FC<FieldItemProps> = ({
     (item) => item.name.value === field.name
   );
 
-  const handleToggleChildField = (input: AddFieldNode | RemoveFieldNode) => {
+  const handleToggleChildField = (
+    input: AddFieldNode | RemoveFieldNode | UpdateFieldNode
+  ) => {
     if (!fieldSelection) {
       return null;
     }
 
-    const selectionSet: SelectionSetNode = fieldSelection.selectionSet
-      ? fieldSelection.selectionSet
-      : {
-          kind: Kind.SELECTION_SET,
-          selections: [],
-        };
+    const selectionSet: SelectionSetNode = (() => {
+      const set: SelectionSetNode = fieldSelection.selectionSet
+        ? fieldSelection.selectionSet
+        : {
+            kind: Kind.SELECTION_SET,
+            selections: [],
+          };
 
-    if (input.type === 'addField') {
-      selectionSet.selections = [
-        ...(fieldSelection.selectionSet?.selections ?? []),
-        {
-          kind: Kind.FIELD,
-          name: {
-            kind: Kind.NAME,
-            value: input.payloads.name,
-          },
-        },
-      ];
-    } else {
-      selectionSet.selections = (
-        fieldSelection.selectionSet?.selections as FieldNode[]
-      ).filter((item) => item.name.value !== input.payloads.name);
-    }
+      switch (input.type) {
+        case 'addField': {
+          set.selections = [
+            ...set.selections,
+            {
+              kind: Kind.FIELD,
+              name: {
+                kind: Kind.NAME,
+                value: input.payloads.name,
+              },
+            },
+          ];
+          break;
+        }
+        case 'removeField': {
+          set.selections = (set.selections as FieldNode[]).filter(
+            (item) => item.name.value !== input.payloads.name
+          );
+          break;
+        }
+        case 'updateField': {
+          set.selections = (set.selections as FieldNode[]).map((item) => {
+            if (item.name.value === input.payloads.name.value) {
+              return input.payloads;
+            }
+            return item;
+          });
+          break;
+        }
+      }
+
+      return set;
+    })();
 
     onEdit({
       type: 'updateField',
@@ -90,34 +110,26 @@ const FieldItem: React.FC<FieldItemProps> = ({
       <div
         className={styles.fieldTitle}
         onClick={() => {
-          setIsFolded(!isFolded);
+          const isAdd = !fieldSelection;
+
+          if (isAdd) {
+            setIsFolded(false);
+          }
+
+          onEdit(
+            isAdd
+              ? {
+                  type: 'addField',
+                  payloads: field,
+                }
+              : {
+                  type: 'removeField',
+                  payloads: { name: field.name },
+                }
+          );
         }}
       >
-        <Checkbox
-          className={styles.checkbox}
-          checked={!!fieldSelection}
-          onClick={(e) => {
-            e.stopPropagation();
-
-            const isAdd = !fieldSelection;
-
-            if (isAdd) {
-              setIsFolded(false);
-            }
-
-            onEdit(
-              isAdd
-                ? {
-                    type: 'addField',
-                    payloads: field,
-                  }
-                : {
-                    type: 'removeField',
-                    payloads: { name: field.name },
-                  }
-            );
-          }}
-        />
+        <Checkbox className={styles.checkbox} checked={!!fieldSelection} />
         <div className={styles.foldIcon}>
           {hasSubFields ? <FoldIcon isFolded={isFolded} /> : null}
         </div>

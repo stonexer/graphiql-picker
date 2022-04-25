@@ -6,7 +6,7 @@ import styles from './index.module.css';
 export interface CheckboxProps {
   className?: string;
   checked?: boolean;
-  onClick: MouseEventHandler<HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({ className, checked, onClick }) => {
