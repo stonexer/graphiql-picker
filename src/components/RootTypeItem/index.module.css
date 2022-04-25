@@ -1,0 +1,29 @@
+.typeTitle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  height: 36px;
+}
+
+.name {
+  margin-left: 4px;
+  line-height: 100%;
+  font-weight: 600;
+  font-size: 16px;
+  color: #3b4c6a;
+}
+
+.fields {
+  position: relative;
+  padding-left: 20px;
+}
+
+.fields::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 8px;
+  width: 1px;
+  background: rgba(59, 75, 104, 0.15);
+}

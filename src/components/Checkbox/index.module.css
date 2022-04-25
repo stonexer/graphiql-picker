@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.uncheck {
+  width: 13px;
+  height: 13px;
+  border: 1px solid #3B4C6A;
+  border-radius: 100%;
+}
+
