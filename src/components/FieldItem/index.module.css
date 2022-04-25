@@ -19,6 +19,18 @@
   margin-left: 4px;
 }
 
+.showArgument {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  font-weight: 600;
+  color: rgba(59, 75, 104, 0.6);
+}
+
+.showArgument span {
+  padding-left: 8px;
+}
+
 .name {
   flex: none;
   margin-left: 4px;

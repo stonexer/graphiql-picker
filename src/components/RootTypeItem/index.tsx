@@ -1,17 +1,17 @@
 import cn from 'classnames';
 import {
   ExecutableDefinitionNode,
-  FieldNode,
-  GraphQLField,
   GraphQLObjectType,
   GraphQLSchema,
-  Kind,
   OperationDefinitionNode,
-  SelectionNode,
 } from 'graphql';
 import React, { useState } from 'react';
 import { useSchemaContext } from '../../contexts/SchemaContext';
-import { editFieldSelection } from '../../helpers/query';
+import {
+  editFieldSelection,
+  getVariableDefinitions,
+} from '../../helpers/query';
+import { EditFieldAction } from '../../types/edit';
 import FieldItem from '../FieldItem';
 
 import FoldIcon from '../FoldIcon';
@@ -25,21 +25,6 @@ export interface RootTypeItemProps {
   operation: ExecutableDefinitionNode | null;
 }
 
-export interface AddFieldNode {
-  type: 'addField';
-  payloads: GraphQLField<any, any>;
-}
-
-export interface RemoveFieldNode {
-  type: 'removeField';
-  payloads: { name: string };
-}
-
-export interface UpdateFieldNode {
-  type: 'updateField';
-  payloads: FieldNode;
-}
-
 const RootTypeItem: React.FC<RootTypeItemProps> = ({
   className,
   type,
@@ -51,15 +36,22 @@ const RootTypeItem: React.FC<RootTypeItemProps> = ({
 
   const [isFolded, setIsFolded] = useState(false);
 
-  const handleToggleField = (
-    input: AddFieldNode | RemoveFieldNode | UpdateFieldNode
-  ) => {
+  const handleToggleField = (input: EditFieldAction) => {
     if (!operation) {
       return null;
     }
 
+    const nextVariableDefinitions = (() => {
+      if (input.type === 'addField') {
+        return getVariableDefinitions(input.payloads);
+      }
+      return undefined;
+    })();
+
     onEditDefinition({
       ...(operation as OperationDefinitionNode),
+      variableDefinitions:
+        nextVariableDefinitions ?? operation.variableDefinitions,
       selectionSet: {
         ...operation.selectionSet,
         selections: editFieldSelection(

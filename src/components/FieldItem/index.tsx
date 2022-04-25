@@ -14,13 +14,10 @@ import {
 import React, { useState } from 'react';
 
 import { editFieldSelection } from '../../helpers/query';
-import {
-  AddFieldNode,
-  RemoveFieldNode,
-  UpdateFieldNode,
-} from '../RootTypeItem';
+import { EditFieldAction } from '../../types/edit';
 import Checkbox from '../Checkbox';
 import FoldIcon from '../FoldIcon';
+import ArgumentsIcon from '../ArgumentsIcon';
 
 import styles from './index.module.css';
 
@@ -29,7 +26,7 @@ export interface FieldItemProps {
   field: GraphQLField<any, any>;
   schema: GraphQLSchema;
   selectionSet: SelectionSetNode | undefined;
-  onEdit(input: AddFieldNode | RemoveFieldNode | UpdateFieldNode): void;
+  onEdit(input: EditFieldAction): void;
 }
 
 const FieldItem: React.FC<FieldItemProps> = ({
@@ -48,9 +45,7 @@ const FieldItem: React.FC<FieldItemProps> = ({
     (item) => item.name.value === field.name
   );
 
-  const handleToggleChildField = (
-    input: AddFieldNode | RemoveFieldNode | UpdateFieldNode
-  ) => {
+  const handleToggleChildField = (input: EditFieldAction) => {
     if (!fieldSelection) {
       return null;
     }
@@ -105,12 +100,19 @@ const FieldItem: React.FC<FieldItemProps> = ({
         <span className={styles.name}>{field.name}</span>
         <span className={styles.typeName}>{field.type.toString()}</span>
         {field.description ? (
-          <span className={styles.description}>{field.description}</span>
+          <span className={styles.description} title={field.description}>
+            {field.description}
+          </span>
         ) : null}
       </div>
-      {/* {fieldArgs.length > 0 ? <div>Show Arguments</div> : null} */}
       {isFolded || !fieldTypeFields ? null : (
         <div className={styles.fields}>
+          {fieldArgs.length > 0 ? (
+            <div className={styles.showArgument}>
+              <ArgumentsIcon />
+              <span>Show Arguments</span>
+            </div>
+          ) : null}
           {Object.keys(fieldTypeFields).map((fieldItem) => {
             return (
               <FieldItem
