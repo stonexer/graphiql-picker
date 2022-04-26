@@ -3,9 +3,12 @@ import {
   DocumentNode,
   FieldNode,
   GraphQLField,
+  isListType,
+  isObjectType,
   Kind,
   parse,
   SelectionNode,
+  SelectionSetNode,
   TypeNode,
   VariableDefinitionNode,
 } from 'graphql';
@@ -29,6 +32,24 @@ export function editFieldSelection(
 ): SelectionNode[] {
   switch (action.type) {
     case 'addField': {
+      const field = action.payloads;
+
+      const subSelectionSet: SelectionSetNode | undefined =
+        isObjectType(field.type) || isListType(field.type)
+          ? {
+              kind: Kind.SELECTION_SET,
+              selections: [
+                {
+                  kind: Kind.FIELD,
+                  name: {
+                    kind: Kind.NAME,
+                    value: 'id',
+                  },
+                },
+              ],
+            }
+          : undefined;
+
       return [
         ...original,
         {
@@ -38,6 +59,7 @@ export function editFieldSelection(
             value: action.payloads.name,
           },
           arguments: getArgumentNodes(action.payloads),
+          selectionSet: subSelectionSet,
         },
       ];
     }

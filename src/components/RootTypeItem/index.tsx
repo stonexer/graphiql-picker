@@ -91,17 +91,19 @@ const RootTypeItem: React.FC<RootTypeItemProps> = ({
       </div>
       {isFolded ? null : (
         <div className={styles.fields}>
-          {Object.keys(fields).map((fieldItem) => {
-            return (
-              <FieldItem
-                key={fieldItem}
-                field={fields[fieldItem]}
-                schema={schema}
-                selectionSet={operation?.selectionSet}
-                onEdit={handleToggleField}
-              />
-            );
-          })}
+          {Object.keys(fields)
+            .sort()
+            .map((fieldItem) => {
+              return (
+                <FieldItem
+                  key={fieldItem}
+                  field={fields[fieldItem]}
+                  schema={schema}
+                  selectionSet={operation?.selectionSet}
+                  onEdit={handleToggleField}
+                />
+              );
+            })}
         </div>
       )}
     </div>
