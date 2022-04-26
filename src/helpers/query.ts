@@ -13,6 +13,7 @@ import {
   VariableDefinitionNode,
 } from 'graphql';
 import { EditFieldAction } from '../types/edit';
+import { getObjectType } from './schema';
 
 export function parseQuery(queryText: string): DocumentNode | null | Error {
   try {
@@ -33,22 +34,29 @@ export function editFieldSelection(
   switch (action.type) {
     case 'addField': {
       const field = action.payloads;
+      const fieldObjectType = getObjectType(field.type);
 
-      const subSelectionSet: SelectionSetNode | undefined =
-        isObjectType(field.type) || isListType(field.type)
-          ? {
-              kind: Kind.SELECTION_SET,
-              selections: [
-                {
-                  kind: Kind.FIELD,
-                  name: {
-                    kind: Kind.NAME,
-                    value: 'id',
-                  },
-                },
-              ],
-            }
-          : undefined;
+      const subSelectionSet: SelectionSetNode | undefined = (() => {
+        if (!fieldObjectType) {
+          return undefined;
+        }
+
+        const typeFields = fieldObjectType.getFields();
+        const autoField = typeFields['id'] ? 'id' : Object.keys(typeFields)[0];
+
+        return {
+          kind: Kind.SELECTION_SET,
+          selections: [
+            {
+              kind: Kind.FIELD,
+              name: {
+                kind: Kind.NAME,
+                value: autoField,
+              },
+            },
+          ],
+        };
+      })();
 
       return [
         ...original,
