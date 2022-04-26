@@ -94,7 +94,14 @@ const FieldItem: React.FC<FieldItemProps> = ({
         }}
       >
         <Checkbox className={styles.checkbox} checked={!!fieldSelection} />
-        <div className={styles.foldIcon}>
+        <div
+          className={styles.foldIcon}
+          onClick={(e) => {
+            e.stopPropagation();
+
+            setIsFolded(!isFolded);
+          }}
+        >
           {hasSubFields ? <FoldIcon isFolded={isFolded} /> : null}
         </div>
         <span className={styles.name}>{field.name}</span>

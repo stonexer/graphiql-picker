@@ -1,5 +1,6 @@
 import cn from 'classnames';
 import {
+  DocumentNode,
   ExecutableDefinitionNode,
   FieldNode,
   GraphQLSchema,
@@ -35,12 +36,12 @@ const SchemaPicker: React.FC<SchemaPickerProps> = ({
   onEditVariables,
 }) => {
   const { queryType, mutationType } = useSchema(schema);
-  const [queryDocument, setQueryDocument] = useState(() => parseQuery(query));
+  const [queryDocument, setQueryDocument] = useState<DocumentNode | null>(null);
 
   useEffect(() => {
     const parsedQuery = parseQuery(query);
 
-    if (parsedQuery) {
+    if (!(parsedQuery instanceof Error)) {
       setQueryDocument(parsedQuery);
     }
   }, [query]);
@@ -60,7 +61,7 @@ const SchemaPicker: React.FC<SchemaPickerProps> = ({
   })();
 
   const onEditDefinition = (
-    nextDefinition: OperationDefinitionNode,
+    nextDefinition: OperationDefinitionNode | null,
     input?: EditFieldAction
   ) => {
     // TODO:
@@ -74,22 +75,17 @@ const SchemaPicker: React.FC<SchemaPickerProps> = ({
       );
     }
 
-    if (!queryDocument) {
+    if (nextDefinition) {
       onEdit(
         print({
           kind: Kind.DOCUMENT,
           definitions: [nextDefinition],
         })
       );
-      return;
+    } else {
+      onEdit('');
+      onEditVariables('');
     }
-
-    onEdit(
-      print({
-        ...queryDocument,
-        definitions: [nextDefinition],
-      })
-    );
   };
 
   return (

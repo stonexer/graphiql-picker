@@ -7,6 +7,7 @@ import {
   OperationDefinitionNode,
 } from 'graphql';
 import React, { useState } from 'react';
+
 import { useSchemaContext } from '../../contexts/SchemaContext';
 import {
   editFieldSelection,
@@ -14,7 +15,6 @@ import {
 } from '../../helpers/query';
 import { EditFieldAction } from '../../types/edit';
 import FieldItem from '../FieldItem';
-
 import FoldIcon from '../FoldIcon';
 
 import styles from './index.module.css';
@@ -45,31 +45,37 @@ const RootTypeItem: React.FC<RootTypeItemProps> = ({
       return undefined;
     })();
 
-    onEditDefinition(
-      {
-        ...((operation
-          ? operation
-          : {
-              kind: Kind.OPERATION_DEFINITION,
-              // TODO:
-              operation: 'query',
-              name: {
-                kind: Kind.NAME,
-                value: 'ExampleQuery',
-              },
-            }) as OperationDefinitionNode),
-        variableDefinitions:
-          nextVariableDefinitions ?? operation?.variableDefinitions,
-        selectionSet: {
-          kind: Kind.SELECTION_SET,
-          selections: editFieldSelection(
-            operation?.selectionSet.selections || [],
-            input
-          ),
-        },
-      },
+    const selections = editFieldSelection(
+      operation?.selectionSet.selections || [],
       input
     );
+
+    if (selections.length) {
+      onEditDefinition(
+        {
+          ...((operation
+            ? operation
+            : {
+                kind: Kind.OPERATION_DEFINITION,
+                // TODO:
+                operation: type.name === 'Mutation' ? 'mutation' : 'query',
+                name: {
+                  kind: Kind.NAME,
+                  value: 'ExampleQuery',
+                },
+              }) as OperationDefinitionNode),
+          variableDefinitions:
+            nextVariableDefinitions ?? operation?.variableDefinitions,
+          selectionSet: {
+            kind: Kind.SELECTION_SET,
+            selections,
+          },
+        },
+        input
+      );
+    } else {
+      onEditDefinition(null, input);
+    }
   };
 
   return (

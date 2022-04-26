@@ -5,7 +5,7 @@ import { EditFieldAction } from '../types/edit';
 export interface SchemaContextValue {
   schema: GraphQLSchema;
   onEditDefinition(
-    nextDefinition: OperationDefinitionNode,
+    nextDefinition: OperationDefinitionNode | null,
     input?: EditFieldAction
   ): void;
 }

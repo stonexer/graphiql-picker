@@ -19,7 +19,7 @@ const defaultQuery = ``;
 
 function App() {
   const [query, setQuery] = useState(defaultQuery);
-  const [variables, setVariables] = useState('{}');
+  const [variables, setVariables] = useState('');
 
   return (
     <div className="App">

@@ -11,7 +11,7 @@ import {
 } from 'graphql';
 import { EditFieldAction } from '../types/edit';
 
-export function parseQuery(queryText: string): DocumentNode | null {
+export function parseQuery(queryText: string): DocumentNode | null | Error {
   try {
     if (!queryText.trim()) {
       return null;
@@ -19,7 +19,7 @@ export function parseQuery(queryText: string): DocumentNode | null {
 
     return parse(queryText, { noLocation: true });
   } catch (err) {
-    return null;
+    return err as Error;
   }
 }
 
